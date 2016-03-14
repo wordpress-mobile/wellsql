@@ -20,10 +20,13 @@ task clean(type: Delete) {
 }
 
 ext {
-    userOrg = 'yarolegovich'
-    groupId = 'com.yarolegovich'
+    userOrg = 'wordpress-mobile'
+    groupId = 'org.wordpress'
     uploadName = 'wellsql'
     description = 'Library that simplifies work with SQLite in Android'
-    publishVersion = '1.0.5'
+    publishVersion = '1.0.6'
     licences = ['MIT']
+    website = 'https://github.com/wordpress-mobile/wellsql'
+    dryRun = 'false'
+    autoPublish = 'true'
 }
