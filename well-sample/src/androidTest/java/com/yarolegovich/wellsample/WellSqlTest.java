@@ -261,6 +261,28 @@ public class WellSqlTest {
     }
 
     @Test
+    public void checkDoubleValuesInsertAndGet() {
+        SuperHero superHero = new SuperHero("FluxC", 1);
+        superHero.setDoubleField(1f / 3);
+        superHero.setDoublerField(Double.MAX_VALUE);
+        WellSql.insert(superHero).execute();
+        SuperHero fluxC = WellSql.select(SuperHero.class).getAsModel().get(0);
+        assertEquals(1f / 3, fluxC.getDoubleField(), 0.00001);
+        assertEquals(Double.MAX_VALUE, fluxC.getDoublerField(), 0.00001);
+    }
+
+    @Test
+    public void checkFloatValuesInsertAndGet() {
+        SuperHero superHero = new SuperHero("FluxC", 1);
+        superHero.setFloatField(1f / 3);
+        superHero.setFloaterField(Float.MAX_VALUE);
+        WellSql.insert(superHero).execute();
+        SuperHero fluxC = WellSql.select(SuperHero.class).getAsModel().get(0);
+        assertEquals(1f / 3, fluxC.getFloatField(), 0.00001);
+        assertEquals(Float.MAX_VALUE, fluxC.getFloaterField(), 0.00001);
+    }
+
+    @Test
     public void checkConcurrentInserts() throws InterruptedException {
         int N = 100;
         final CountDownLatch countDownLatch = new CountDownLatch(N);
