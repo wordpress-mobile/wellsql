@@ -23,7 +23,7 @@ ext {
     groupId = 'org.wordpress'
     uploadName = 'wellsql'
     description = 'Library that simplifies work with SQLite in Android'
-    publishVersion = '1.1.0'
+    publishVersion = '1.1.1'
     licences = ['MIT']
     website = 'https://github.com/wordpress-mobile/wellsql'
     dryRun = 'false'
