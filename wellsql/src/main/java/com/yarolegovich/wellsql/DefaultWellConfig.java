@@ -20,7 +20,8 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public abstract class DefaultWellConfig implements WellConfig,
-        WellConfig.OnUpgradeListener, WellConfig.OnCreateListener, WellConfig.OnDowngradeListener {
+        WellConfig.OnUpgradeListener, WellConfig.OnCreateListener, WellConfig.OnDowngradeListener,
+        WellConfig.OnConfigureListener {
 
     private Context mContext;
     private TableLookup mGeneratedLookup;
@@ -64,6 +65,11 @@ public abstract class DefaultWellConfig implements WellConfig,
     }
 
     @Override
+    public OnConfigureListener getOnConfigureListener() {
+        return this;
+    }
+
+    @Override
     public Context getContext() {
         return mContext;
     }
@@ -81,5 +87,9 @@ public abstract class DefaultWellConfig implements WellConfig,
     @Override
     public void onDowngrade(SQLiteDatabase db, WellTableManager helper, int oldVersion, int newVersion) {
         throw new SQLiteException(mContext.getString(R.string.downgrade, oldVersion, newVersion));
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db, WellTableManager helper) {
     }
 }
