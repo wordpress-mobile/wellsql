@@ -2,6 +2,7 @@ package com.yarolegovich.wellsample;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 
 import com.yarolegovich.wellsql.DefaultWellConfig;
 import com.yarolegovich.wellsql.WellSql;
@@ -42,6 +43,15 @@ public class WellConfig extends DefaultWellConfig {
             helper.dropTable(table);
         }
         onCreate(db, helper);
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db, WellTableManager helper) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            db.setForeignKeyConstraintsEnabled(true);
+        } else {
+            db.execSQL("PRAGMA foreign_keys=ON;");
+        }
     }
 
     /*
