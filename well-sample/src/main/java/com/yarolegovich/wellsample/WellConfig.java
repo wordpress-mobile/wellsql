@@ -22,12 +22,14 @@ public class WellConfig extends DefaultWellConfig {
 
     @Override
     public void onCreate(SQLiteDatabase db, WellTableManager helper) {
+        helper.createTable(AntiHero.class);
         helper.createTable(SuperHero.class);
         helper.createTable(Villain.class);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, WellTableManager helper, int newVersion, int oldVersion) {
+        helper.dropTable(AntiHero.class);
         helper.dropTable(SuperHero.class);
         helper.dropTable(Villain.class);
         onCreate(db, helper);
