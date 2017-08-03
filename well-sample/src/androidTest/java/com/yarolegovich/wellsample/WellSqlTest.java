@@ -3,11 +3,14 @@ package com.yarolegovich.wellsample;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.wellsql.generated.AntiHeroTable;
 import com.wellsql.generated.SuperHeroTable;
+import com.wellsql.generated.VillainTable;
 import com.yarolegovich.wellsql.SelectQuery;
 import com.yarolegovich.wellsql.WellCursor;
 import com.yarolegovich.wellsql.WellSql;
@@ -15,6 +18,7 @@ import com.yarolegovich.wellsql.mapper.InsertMapper;
 import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 import com.yarolegovich.wellsql.mapper.SelectMapper;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -261,6 +265,60 @@ public class WellSqlTest {
         List<SuperHero> selectedHeroes = WellSql.select(SuperHero.class).getAsModel();
         assertEquals("Jeanne", selectedHeroes.get(0).getName());
         assertEquals(hero.getId(), selectedHeroes.get(0).getId());
+    }
+
+    @Test
+    public void foreignKeyClauseWorks() {
+        SuperHero superHero = new SuperHero("Magneto", 50);
+        WellSql.insert(superHero).execute();
+        List<SuperHero> superHeroes = WellSql.select(SuperHero.class).getAsModel();
+        assertEquals(1, superHeroes.size());
+
+        Villain villain = new Villain(5, "Magneto", 10);
+        WellSql.insert(villain).execute();
+        List<Villain> villains = WellSql.select(Villain.class).getAsModel();
+        assertEquals(1, villains.size());
+
+        AntiHero antiHero = new AntiHero(1, "Magneto", superHero.getId(), villain.getId());
+        WellSql.insert(antiHero).execute();
+        List<AntiHero> antiHeroes = WellSql.select(AntiHero.class).getAsModel();
+        assertEquals(1, antiHeroes.size());
+
+        try {
+            // Shouldn't be able to delete, since an entry in AntiHero is mapped to this SuperHero
+            WellSql.delete(SuperHero.class).where()
+                    .equals(SuperHeroTable.NAME, superHero.getName())
+                    .endWhere().execute();
+            Assert.fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
+        } catch(SQLiteConstraintException e) {
+            // No op
+        }
+
+        try {
+            // Shouldn't be able to delete, since an entry in AntiHero is mapped to this Villain
+            WellSql.delete(Villain.class).where()
+                    .equals(VillainTable.NAME, villain.getName())
+                    .endWhere().execute();
+            Assert.fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
+        } catch(SQLiteConstraintException e) {
+            // No op
+        }
+
+        // Once the AntiHero with the foreign key is removed, we should be able to delete the SuperHero and Villain
+        int rowsDeleted = WellSql.delete(AntiHero.class).where()
+                .equals(AntiHeroTable.NAME, antiHero.getName())
+                .endWhere().execute();
+        assertEquals(1, rowsDeleted);
+
+        rowsDeleted = WellSql.delete(SuperHero.class).where()
+                .equals(SuperHeroTable.NAME, superHero.getName())
+                .endWhere().execute();
+        assertEquals(1, rowsDeleted);
+
+        rowsDeleted = WellSql.delete(Villain.class).where()
+                .equals(VillainTable.NAME, villain.getName())
+                .endWhere().execute();
+        assertEquals(1, rowsDeleted);
     }
 
     @Test
