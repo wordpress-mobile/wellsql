@@ -3,12 +3,14 @@ package com.yarolegovich.wellsample;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-
 import com.yarolegovich.wellsql.DefaultWellConfig;
 import com.yarolegovich.wellsql.WellSql;
 import com.yarolegovich.wellsql.WellTableManager;
+import com.yarolegovich.wellsql.core.Identifiable;
 import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,22 +18,28 @@ import java.util.Map;
  */
 public class WellConfig extends DefaultWellConfig {
 
+    private static final List<Class<? extends Identifiable>> TABLES = new ArrayList<Class<? extends Identifiable>>() {{
+        add(AntiHero.class);
+        add(SuperHero.class);
+        add(Villain.class);
+    }};
+
     public WellConfig(Context context) {
         super(context);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db, WellTableManager helper) {
-        helper.createTable(AntiHero.class);
-        helper.createTable(SuperHero.class);
-        helper.createTable(Villain.class);
+        for (Class<? extends Identifiable> table : TABLES) {
+            helper.createTable(table);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, WellTableManager helper, int newVersion, int oldVersion) {
-        helper.dropTable(AntiHero.class);
-        helper.dropTable(SuperHero.class);
-        helper.dropTable(Villain.class);
+        for (Class<? extends Identifiable> table : TABLES) {
+            helper.dropTable(table);
+        }
         onCreate(db, helper);
     }
 
