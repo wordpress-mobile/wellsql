@@ -38,11 +38,14 @@ public class WellSqlTest {
     @BeforeClass
     public static void setUpDb() {
         Context context = InstrumentationRegistry.getTargetContext();
-        WellSql.init(new WellConfig(context));
+        WellConfig config = new WellConfig(context);
+        WellSql.init(config);
+        config.reset();
     }
 
     @Before
     public void clearDb() {
+        WellSql.delete(AntiHero.class).execute();
         WellSql.delete(SuperHero.class).execute();
         WellSql.delete(Villain.class).execute();
     }

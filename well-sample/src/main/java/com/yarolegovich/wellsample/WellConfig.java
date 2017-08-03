@@ -7,6 +7,7 @@ import com.yarolegovich.wellsql.DefaultWellConfig;
 import com.yarolegovich.wellsql.WellSql;
 import com.yarolegovich.wellsql.WellTableManager;
 import com.yarolegovich.wellsql.core.Identifiable;
+import com.yarolegovich.wellsql.core.TableClass;
 import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 
 import java.util.ArrayList;
@@ -61,5 +62,14 @@ public class WellConfig extends DefaultWellConfig {
     @Override
     public String getDbName() {
         return "my_db";
+    }
+
+    public void reset() {
+        SQLiteDatabase db = WellSql.giveMeWritableDb();
+        for (Class<? extends Identifiable> clazz : TABLES) {
+            TableClass table = getTable(clazz);
+            db.execSQL("DROP TABLE IF EXISTS " + table.getTableName());
+            db.execSQL(table.createStatement());
+        }
     }
 }
