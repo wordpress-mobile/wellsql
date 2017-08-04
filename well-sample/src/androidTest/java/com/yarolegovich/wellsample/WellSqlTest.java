@@ -8,7 +8,7 @@ import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.wellsql.generated.AntiHeroTable;
+import com.wellsql.generated.StrangePairTable;
 import com.wellsql.generated.SuperHeroTable;
 import com.wellsql.generated.VillainTable;
 import com.yarolegovich.wellsql.SelectQuery;
@@ -49,7 +49,7 @@ public class WellSqlTest {
 
     @Before
     public void clearDb() {
-        WellSql.delete(AntiHero.class).execute();
+        WellSql.delete(StrangePair.class).execute();
         WellSql.delete(SuperHero.class).execute();
         WellSql.delete(Villain.class).execute();
     }
@@ -269,25 +269,25 @@ public class WellSqlTest {
 
     @Test
     public void foreignKeyClauseWorks() {
-        SuperHero superHero = new SuperHero("Magneto", 50);
+        SuperHero superHero = new SuperHero("Superman", 50);
         WellSql.insert(superHero).execute();
         List<SuperHero> superHeroes = WellSql.select(SuperHero.class).getAsModel();
         assertEquals(1, superHeroes.size());
 
-        Villain villain = new Villain(5, "Magneto", 10);
+        Villain villain = new Villain(5, "Lex Luthor", 10);
         WellSql.insert(villain).execute();
         List<Villain> villains = WellSql.select(Villain.class).getAsModel();
         assertEquals(1, villains.size());
 
-        AntiHero antiHero = new AntiHero(1, "Magneto", superHero.getId(), villain.getId());
-        WellSql.insert(antiHero).execute();
-        List<AntiHero> antiHeroes = WellSql.select(AntiHero.class).getAsModel();
-        assertEquals(1, antiHeroes.size());
+        StrangePair strangePair = new StrangePair(1, superHero.getId(), villain.getId());
+        WellSql.insert(strangePair).execute();
+        List<StrangePair> strangePairs = WellSql.select(StrangePair.class).getAsModel();
+        assertEquals(1, strangePairs.size());
 
         try {
-            // Shouldn't be able to delete, since an entry in AntiHero is mapped to this SuperHero
+            // Shouldn't be able to delete, since an entry in StrangePair is mapped to this SuperHero
             WellSql.delete(SuperHero.class).where()
-                    .equals(SuperHeroTable.NAME, superHero.getName())
+                    .equals(SuperHeroTable.ID, superHero.getId())
                     .endWhere().execute();
             Assert.fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
         } catch(SQLiteConstraintException e) {
@@ -295,28 +295,28 @@ public class WellSqlTest {
         }
 
         try {
-            // Shouldn't be able to delete, since an entry in AntiHero is mapped to this Villain
+            // Shouldn't be able to delete, since an entry in StrangePair is mapped to this Villain
             WellSql.delete(Villain.class).where()
-                    .equals(VillainTable.NAME, villain.getName())
+                    .equals(VillainTable.ID, villain.getId())
                     .endWhere().execute();
             Assert.fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
         } catch(SQLiteConstraintException e) {
             // No op
         }
 
-        // Once the AntiHero with the foreign key is removed, we should be able to delete the SuperHero and Villain
-        int rowsDeleted = WellSql.delete(AntiHero.class).where()
-                .equals(AntiHeroTable.NAME, antiHero.getName())
+        // Once the StrangePair with the foreign key is removed, we should be able to delete the SuperHero and Villain
+        int rowsDeleted = WellSql.delete(StrangePair.class).where()
+                .equals(StrangePairTable.ID, strangePair.getId())
                 .endWhere().execute();
         assertEquals(1, rowsDeleted);
 
         rowsDeleted = WellSql.delete(SuperHero.class).where()
-                .equals(SuperHeroTable.NAME, superHero.getName())
+                .equals(SuperHeroTable.ID, superHero.getId())
                 .endWhere().execute();
         assertEquals(1, rowsDeleted);
 
         rowsDeleted = WellSql.delete(Villain.class).where()
-                .equals(VillainTable.NAME, villain.getName())
+                .equals(VillainTable.ID, villain.getId())
                 .endWhere().execute();
         assertEquals(1, rowsDeleted);
     }

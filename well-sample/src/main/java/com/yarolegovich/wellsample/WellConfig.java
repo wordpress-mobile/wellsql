@@ -21,7 +21,7 @@ import java.util.Map;
 public class WellConfig extends DefaultWellConfig {
 
     private static final List<Class<? extends Identifiable>> TABLES = new ArrayList<Class<? extends Identifiable>>() {{
-        add(AntiHero.class);
+        add(StrangePair.class);
         add(SuperHero.class);
         add(Villain.class);
     }};

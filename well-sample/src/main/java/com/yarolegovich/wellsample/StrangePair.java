@@ -5,11 +5,10 @@ import com.yarolegovich.wellsql.core.annotation.Column;
 import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
 import com.yarolegovich.wellsql.core.annotation.RawConstraints;
 import com.yarolegovich.wellsql.core.annotation.Table;
-import com.yarolegovich.wellsql.core.annotation.Unique;
 
 @Table
 @RawConstraints({"FOREIGN KEY(HERO_ID) REFERENCES SuperHero(_id)", "FOREIGN KEY(VILLAIN_ID) REFERENCES Villain(_id)"})
-public class AntiHero implements Identifiable {
+public class StrangePair implements Identifiable {
     @Column
     @PrimaryKey(autoincrement = false)
     private int id;
@@ -17,14 +16,11 @@ public class AntiHero implements Identifiable {
     private int heroId;
     @Column
     private int villainId;
-    @Column @Unique
-    private String name;
 
-    public AntiHero() { }
+    public StrangePair() { }
 
-    public AntiHero(int id, String name, int heroId, int villainId) {
+    public StrangePair(int id, int heroId, int villainId) {
         this.id = id;
-        this.name = name;
         this.heroId = heroId;
         this.villainId = villainId;
     }
@@ -51,13 +47,5 @@ public class AntiHero implements Identifiable {
 
     public void setVillainId(int villainId) {
         this.villainId = villainId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
