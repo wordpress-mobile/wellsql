@@ -53,6 +53,14 @@ public class WellSql extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        WellConfig.OnConfigureListener l = mDbConfig.getOnConfigureListener();
+        if (l != null) {
+            l.onConfigure(db, new WellTableManager(db));
+        }
+    }
+
     public static <T extends Identifiable> SelectQuery<T> selectUnique(Class<T> token) {
         return select(token).uniqueOnly();
     }

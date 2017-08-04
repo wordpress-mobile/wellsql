@@ -18,6 +18,7 @@ public interface WellConfig {
     OnUpgradeListener getOnUpgradeListener();
     OnCreateListener getOnCreateListener();
     OnDowngradeListener getOnDowngradeListener();
+    OnConfigureListener getOnConfigureListener();
     Context getContext();
 
     <T>SQLiteMapper<T> getMapper(Class<T> token);
@@ -33,5 +34,9 @@ public interface WellConfig {
 
     interface OnDowngradeListener {
         void onDowngrade(SQLiteDatabase db, WellTableManager helper, int oldVersion, int newVersion);
+    }
+
+    interface OnConfigureListener {
+        void onConfigure(SQLiteDatabase db, WellTableManager helper);
     }
 }

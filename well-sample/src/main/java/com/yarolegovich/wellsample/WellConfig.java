@@ -2,13 +2,17 @@ package com.yarolegovich.wellsample;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-
+import android.os.Build;
 
 import com.yarolegovich.wellsql.DefaultWellConfig;
 import com.yarolegovich.wellsql.WellSql;
 import com.yarolegovich.wellsql.WellTableManager;
+import com.yarolegovich.wellsql.core.Identifiable;
+import com.yarolegovich.wellsql.core.TableClass;
 import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,21 +20,38 @@ import java.util.Map;
  */
 public class WellConfig extends DefaultWellConfig {
 
+    private static final List<Class<? extends Identifiable>> TABLES = new ArrayList<Class<? extends Identifiable>>() {{
+        add(StrangePair.class);
+        add(SuperHero.class);
+        add(Villain.class);
+    }};
+
     public WellConfig(Context context) {
         super(context);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db, WellTableManager helper) {
-        helper.createTable(SuperHero.class);
-        helper.createTable(Villain.class);
+        for (Class<? extends Identifiable> table : TABLES) {
+            helper.createTable(table);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, WellTableManager helper, int newVersion, int oldVersion) {
-        helper.dropTable(SuperHero.class);
-        helper.dropTable(Villain.class);
+        for (Class<? extends Identifiable> table : TABLES) {
+            helper.dropTable(table);
+        }
         onCreate(db, helper);
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db, WellTableManager helper) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            db.setForeignKeyConstraintsEnabled(true);
+        } else {
+            db.execSQL("PRAGMA foreign_keys=ON;");
+        }
     }
 
     /*
@@ -51,5 +72,14 @@ public class WellConfig extends DefaultWellConfig {
     @Override
     public String getDbName() {
         return "my_db";
+    }
+
+    public void reset() {
+        SQLiteDatabase db = WellSql.giveMeWritableDb();
+        for (Class<? extends Identifiable> clazz : TABLES) {
+            TableClass table = getTable(clazz);
+            db.execSQL("DROP TABLE IF EXISTS " + table.getTableName());
+            db.execSQL(table.createStatement());
+        }
     }
 }
