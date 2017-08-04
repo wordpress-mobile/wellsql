@@ -179,6 +179,12 @@ SQLiteDatabase db = WellSql.giveMeWritableDb();
 ```
 For more usage examples you can see tests of well-sample, but I think nothing extraordinary in api :)
 
+## Publish the aar to bintray
+
+```shell
+$ ./gradlew assemble publishToMavenLocal bintrayUpload -PbintrayUser=FIXME -PbintrayKey=FIXME -PdryRun=false
+```
+
 ## Licence
 
 MIT licence
