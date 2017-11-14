@@ -23,6 +23,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':wellsql')
+    compile project(':well-sample-addon')
+
     annotationProcessor project(':well-processor')
     compile 'com.android.support:appcompat-v7:25.3.1'
 
