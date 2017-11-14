@@ -422,6 +422,14 @@ public class WellSqlTest {
         assertNotEquals(false, countDownLatch.await(30, TimeUnit.SECONDS));
     }
 
+    @Test
+    public void moduleTablesWork() {
+        List<AlternateHero> altHeroes = getAltHeroes();
+        WellSql.insert(altHeroes).execute();
+        List<AlternateHero> stored = WellSql.select(AlternateHero.class).getAsModel();
+        assertEquals(altHeroes.size(), stored.size());
+    }
+
     private List<SuperHero> getHeroes() {
         return Arrays.asList(
                 new SuperHero("Hank Pym", 1),
@@ -441,6 +449,13 @@ public class WellSqlTest {
                 new Villain(12, "Electro", 133),
                 new Villain(1488, "Red Scull", 1214),
                 new Villain(95, "Sandman", 241)
+        );
+    }
+
+    private List<AlternateHero> getAltHeroes() {
+        return Arrays.asList(
+                new AlternateHero("Hank Pym"),
+                new AlternateHero("Hulk")
         );
     }
 }
