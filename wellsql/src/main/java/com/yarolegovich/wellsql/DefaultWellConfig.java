@@ -13,7 +13,9 @@ import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by yarolegovich on 26.11.2015.
@@ -24,28 +26,51 @@ public abstract class DefaultWellConfig implements WellConfig,
         WellConfig.OnConfigureListener {
 
     private Context mContext;
-    private TableLookup mGeneratedLookup;
+    private Set<TableLookup> mGeneratedLookups = new HashSet<>();
     private Map<Class<?>, SQLiteMapper<?>> mMappers;
 
+    protected Set<Class<? extends Identifiable>> mTables = new HashSet<>();
+
     public DefaultWellConfig(Context context) {
+        this(context, Collections.<String>emptySet());
+    }
+
+    public DefaultWellConfig(Context context, Set<String> addOns) {
         mContext = context.getApplicationContext();
         mMappers = new HashMap<>();
         try {
             Class<? extends TableLookup> clazz = (Class<? extends TableLookup>)
                     Class.forName(Binder.PACKAGE + "." + Binder.LOOKUP_CLASS);
-            mGeneratedLookup = clazz.newInstance();
-            for (Class<?> token : mGeneratedLookup.getMapperTokens()) {
-                mMappers.put(token, new MapperAdapter<>(mGeneratedLookup.getMapper(token)));
-            }
+            mGeneratedLookups.add(clazz.newInstance());
         } catch (ClassNotFoundException e) {
             throw new WellException(mContext.getString(R.string.classes_not_found));
         } catch (Exception e) {
             /* This can't be thrown, because Binder.LOOKUP_CLASS always will be instantiated successfully */
         }
+
+        for (String addOn : addOns) {
+            String className = Binder.PACKAGE + "." + Binder.LOOKUP_CLASS + addOn;
+            try {
+                Class<? extends TableLookup> clazz = (Class<? extends TableLookup>) Class.forName(className);
+                mGeneratedLookups.add(clazz.newInstance());
+            } catch (ClassNotFoundException e) {
+                throw new WellException(mContext.getString(R.string.addon_classes_not_found));
+            } catch (Exception e) {
+                throw new WellException("Unable to instantiate " + className);
+            }
+        }
+
+        for (TableLookup lookup : mGeneratedLookups) {
+            for (Class<?> token : lookup.getMapperTokens()) {
+                mMappers.put(token, new MapperAdapter<>(lookup.getMapper(token)));
+                mTables.add((Class<? extends Identifiable>) token);
+            }
+        }
+
         mMappers.putAll(registerMappers());
     }
 
-    protected Map<Class<?>, SQLiteMapper<?>> registerMappers() {
+    protected Map<Class<? extends Identifiable>, SQLiteMapper<?>> registerMappers() {
         return Collections.emptyMap();
     }
 
@@ -81,7 +106,13 @@ public abstract class DefaultWellConfig implements WellConfig,
 
     @Override
     public TableClass getTable(Class<? extends Identifiable> token) {
-        return mGeneratedLookup.getTable(token);
+        for (TableLookup lookup : mGeneratedLookups) {
+            TableClass table = lookup.getTable(token);
+            if (table != null) {
+                return table;
+            }
+        }
+        return null;
     }
 
     @Override

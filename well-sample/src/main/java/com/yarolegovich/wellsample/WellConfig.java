@@ -19,27 +19,20 @@ import java.util.Map;
  * Created by yarolegovich on 26.11.2015.
  */
 public class WellConfig extends DefaultWellConfig {
-
-    private static final List<Class<? extends Identifiable>> TABLES = new ArrayList<Class<? extends Identifiable>>() {{
-        add(StrangePair.class);
-        add(SuperHero.class);
-        add(Villain.class);
-    }};
-
     public WellConfig(Context context) {
         super(context);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db, WellTableManager helper) {
-        for (Class<? extends Identifiable> table : TABLES) {
+        for (Class<? extends Identifiable> table : mTables) {
             helper.createTable(table);
         }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, WellTableManager helper, int newVersion, int oldVersion) {
-        for (Class<? extends Identifiable> table : TABLES) {
+        for (Class<? extends Identifiable> table : mTables) {
             helper.dropTable(table);
         }
         onCreate(db, helper);
@@ -60,7 +53,7 @@ public class WellConfig extends DefaultWellConfig {
      * No need to call super.registerMappers()
      */
     @Override
-    protected Map<Class<?>, SQLiteMapper<?>> registerMappers() {
+    protected Map<Class<? extends Identifiable>, SQLiteMapper<?>> registerMappers() {
         return super.registerMappers();
     }
 
@@ -76,7 +69,7 @@ public class WellConfig extends DefaultWellConfig {
 
     public void reset() {
         SQLiteDatabase db = WellSql.giveMeWritableDb();
-        for (Class<? extends Identifiable> clazz : TABLES) {
+        for (Class<? extends Identifiable> clazz : mTables) {
             TableClass table = getTable(clazz);
             db.execSQL("DROP TABLE IF EXISTS " + table.getTableName());
             db.execSQL(table.createStatement());
