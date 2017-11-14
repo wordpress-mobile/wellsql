@@ -12,6 +12,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.yarolegovich.wellsql.core.Mapper;
+import com.yarolegovich.wellsql.core.TableClass;
 import com.yarolegovich.wellsql.core.TableLookup;
 import com.yarolegovich.wellsql.core.annotation.Check;
 import com.yarolegovich.wellsql.core.annotation.Column;
@@ -19,7 +20,6 @@ import com.yarolegovich.wellsql.core.annotation.NotNull;
 import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
 import com.yarolegovich.wellsql.core.annotation.RawConstraints;
 import com.yarolegovich.wellsql.core.annotation.Table;
-import com.yarolegovich.wellsql.core.TableClass;
 import com.yarolegovich.wellsql.core.annotation.Unique;
 
 import java.io.IOException;
@@ -78,6 +78,7 @@ public class TableProcessor extends AbstractProcessor {
                 .addStatement("$N = new $T()", mapperMap, concreteMappers);
 
         boolean generated = false;
+        String addOnName = "";
         for (Element tableElement : roundEnv.getElementsAnnotatedWith(Table.class)) {
             if (tableElement.getKind() != ElementKind.CLASS) {
                 error(tableElement, "Only classes can be annotated with @Table");
@@ -89,6 +90,10 @@ public class TableProcessor extends AbstractProcessor {
                 TypeName token = ClassName.get(tableElement.asType());
 
                 Table annotation = tableElement.getAnnotation(Table.class);
+
+                if (addOnName.isEmpty() && !annotation.addOn().isEmpty()) {
+                    addOnName = annotation.addOn();
+                }
 
                 if (annotation.generateTable()) {
                     String tableName = createTable(tableElement, table);
@@ -110,7 +115,7 @@ public class TableProcessor extends AbstractProcessor {
         }
 
         if (generated) {
-            generateLookup(constructorBuilder.build(), tableMap, mapperMap);
+            generateLookup(constructorBuilder.build(), tableMap, mapperMap, addOnName);
         }
 
         return true;
@@ -226,11 +231,11 @@ public class TableProcessor extends AbstractProcessor {
         return CodeGenUtils.PACKAGE + "." + genClassName;
     }
 
-    private void generateLookup(MethodSpec constructor, FieldSpec tableMap, FieldSpec mapperMap) {
+    private void generateLookup(MethodSpec constructor, FieldSpec tableMap, FieldSpec mapperMap, String addOnName) {
 
         TypeName anyClass = CodeGenUtils.wildcard(Class.class);
 
-        TypeSpec.Builder lookupClassBuilder = TypeSpec.classBuilder(CodeGenUtils.LOOKUP_CLASS)
+        TypeSpec.Builder lookupClassBuilder = TypeSpec.classBuilder(CodeGenUtils.LOOKUP_CLASS + addOnName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(TableLookup.class);
 

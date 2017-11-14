@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Table {
     String name() default "";
+    String addOn() default "";
 
     boolean generateMapper() default true;
     boolean generateTable() default true;

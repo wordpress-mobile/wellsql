@@ -7,7 +7,7 @@ import com.yarolegovich.wellsql.core.annotation.RawConstraints;
 import com.yarolegovich.wellsql.core.annotation.Table;
 import com.yarolegovich.wellsql.core.annotation.Unique;
 
-@Table
+@Table(addOn = ConfigUtils.ADDON_NAME_ALT)
 @RawConstraints({"UNIQUE (NAME)"})
 public class AlternateHero implements Identifiable {
 
