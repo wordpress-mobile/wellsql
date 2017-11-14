@@ -11,9 +11,8 @@ import com.yarolegovich.wellsql.core.Identifiable;
 import com.yarolegovich.wellsql.core.TableClass;
 import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by yarolegovich on 26.11.2015.
@@ -21,6 +20,10 @@ import java.util.Map;
 public class WellConfig extends DefaultWellConfig {
     public WellConfig(Context context) {
         super(context);
+    }
+
+    public WellConfig(Context context, Set<String> addOns) {
+        super(context, addOns);
     }
 
     @Override

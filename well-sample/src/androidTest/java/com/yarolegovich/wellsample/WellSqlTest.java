@@ -42,7 +42,7 @@ public class WellSqlTest {
     @BeforeClass
     public static void setUpDb() {
         Context context = InstrumentationRegistry.getTargetContext();
-        WellConfig config = new WellConfig(context);
+        WellConfig config = new WellConfig(context, App.ENABLED_ADDONS);
         WellSql.init(config);
         config.reset();
     }
