@@ -7,5 +7,5 @@ public interface TableClass {
     String createStatement();
     String getTableName();
     boolean shouldAutoincrementId();
-    Class<?> getModelClass();
+    Class<? extends Identifiable> getModelClass();
 }

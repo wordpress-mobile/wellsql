@@ -1,6 +1,5 @@
 package com.yarolegovich.processor;
 
-
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -60,18 +59,18 @@ public class TableProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-        TypeName anyClass = CodeGenUtils.wildcard(Class.class);
+        TypeName anyClass = CodeGenUtils.wildcardIdentifiable(Class.class);
 
         FieldSpec tableMap = FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(Map.class),
                         anyClass, ClassName.get(TableClass.class)),
                 "tables", Modifier.PRIVATE, Modifier.FINAL).build();
 
-        FieldSpec mapperMap = FieldSpec.builder(CodeGenUtils.mapOfParametrized(Map.class,
+        FieldSpec mapperMap = FieldSpec.builder(CodeGenUtils.mapOfParametrizedIdentifiable(Map.class,
                         Class.class, Mapper.class),
                 "mappers", Modifier.PRIVATE, Modifier.FINAL).build();
 
         TypeName concreteTables = ParameterizedTypeName.get(ClassName.get(HashMap.class), anyClass, ClassName.get(TableClass.class));
-        TypeName concreteMappers = CodeGenUtils.mapOfParametrized(HashMap.class, Class.class, Mapper.class);
+        TypeName concreteMappers = CodeGenUtils.mapOfParametrizedIdentifiable(HashMap.class, Class.class, Mapper.class);
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("$N = new $T()", tableMap, concreteTables)
@@ -138,7 +137,7 @@ public class TableProcessor extends AbstractProcessor {
                 .build();
         TypeName model = ClassName.get(tableElement.asType());
         MethodSpec modelClass = CodeGenUtils.interfaceMethod("getModelClass")
-                .returns(CodeGenUtils.wildcard(Class.class))
+                .returns(CodeGenUtils.wildcardIdentifiable(Class.class))
                 .addStatement("return $T.class", model)
                 .build();
         MethodSpec isAutoincrement = CodeGenUtils.interfaceMethod("shouldAutoincrementId")
@@ -233,7 +232,7 @@ public class TableProcessor extends AbstractProcessor {
 
     private void generateLookup(MethodSpec constructor, FieldSpec tableMap, FieldSpec mapperMap, String addOnName) {
 
-        TypeName anyClass = CodeGenUtils.wildcard(Class.class);
+        TypeName anyClass = CodeGenUtils.wildcardIdentifiable(Class.class);
 
         TypeSpec.Builder lookupClassBuilder = TypeSpec.classBuilder(CodeGenUtils.LOOKUP_CLASS + addOnName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
