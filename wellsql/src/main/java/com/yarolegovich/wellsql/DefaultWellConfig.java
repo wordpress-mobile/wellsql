@@ -30,6 +30,7 @@ public abstract class DefaultWellConfig implements WellConfig,
     private Map<Class<?>, SQLiteMapper<?>> mMappers;
 
     protected Set<Class<? extends Identifiable>> mTables = new HashSet<>();
+    protected Set<String> mActiveAddOns;
 
     public DefaultWellConfig(Context context) {
         this(context, Collections.<String>emptySet());
@@ -37,6 +38,7 @@ public abstract class DefaultWellConfig implements WellConfig,
 
     public DefaultWellConfig(Context context, Set<String> addOns) {
         mContext = context.getApplicationContext();
+        mActiveAddOns = addOns;
         mMappers = new HashMap<>();
         try {
             Class<? extends TableLookup> clazz = (Class<? extends TableLookup>)
