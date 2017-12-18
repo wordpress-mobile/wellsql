@@ -10,23 +10,36 @@ Android API for working with SQLiteDatabase can be characterized as inconvenient
 
 ## Add to your project
 
-In build.gradle for your project add
-```gradle
-buildscript {
-  dependencies {
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-  }
-}
-
-```
-In build.gradle for your module add
+In build.gradle for your module add:
 
 ```gradle
-apply plugin: 'com.neenbedankt.android-apt'
-
 dependencies {
-  compile 'com.yarolegovich:wellsql:1.0.5'
-  apt 'com.yarolegovich:wellsql-processor:1.0.5'
+    compile 'org.wordpress:wellsql:1.2.0'
+    annotationProcessor 'org.wordpress:wellsql-processor:1.2.0'
+}
+```
+
+### Jitpack
+
+You can also use Jitpack:
+
+In build.gradle for your project add:
+
+```gradle
+allprojects {
+    repositories {
+        ...
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+
+In build.gradle for your module add:
+
+```gradle
+dependencies {
+    compile 'com.github.wordpress-mobile.wellsql:wellsql:[commit hash or branch snaphost]'
+    annotationProcessor 'com.github.wordpress-mobile.wellsql:well-processor:[commit hash or branch snaphost]'
 }
 ```
 
