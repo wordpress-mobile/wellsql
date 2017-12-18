@@ -43,6 +43,16 @@ dependencies {
 }
 ```
 
+### Publish the aar to bintray
+
+```shell
+$ ./gradlew assemble publishToMavenLocal bintrayUpload -PbintrayUser=FIXME -PbintrayKey=FIXME -PdryRun=false
+```
+
+---
+
+# Documentation
+
 ## Table creation and setup
 
 One of the most important features to ease your life is boilerplate code generation. Here are the steps to create a table.
@@ -191,12 +201,6 @@ SQLiteDatabase db = WellSql.giveMeReadableDb();
 SQLiteDatabase db = WellSql.giveMeWritableDb();
 ```
 For more usage examples you can see tests of well-sample, but I think nothing extraordinary in api :)
-
-## Publish the aar to bintray
-
-```shell
-$ ./gradlew assemble publishToMavenLocal bintrayUpload -PbintrayUser=FIXME -PbintrayKey=FIXME -PdryRun=false
-```
 
 ## Licence
 
