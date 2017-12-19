@@ -1,12 +1,10 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
 
     defaultConfig {
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        applicationId "com.yarolegovich.wellsample"
         minSdkVersion 11
         targetSdkVersion 25
         versionCode 1
@@ -23,13 +21,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':wellsql')
-    compile project(':well-sample-addon')
-
     annotationProcessor project(':well-processor')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-
-    testCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test:runner:0.3') {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
 }

@@ -7,8 +7,8 @@ import java.util.Set;
  */
 public interface TableLookup {
     <T>Mapper<T> getMapper(Class<T> token);
-    TableClass getTable(Class<?> token);
+    TableClass getTable(Class<? extends Identifiable> token);
 
-    Set<Class<?>> getMapperTokens();
-    Set<Class<?>> getTableTokens();
+    Set<Class<? extends Identifiable>> getMapperTokens();
+    Set<Class<? extends Identifiable>> getTableTokens();
 }

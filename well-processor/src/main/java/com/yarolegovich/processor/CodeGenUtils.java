@@ -4,8 +4,9 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.WildcardTypeName;
 import com.yarolegovich.wellsql.core.Binder;
+import com.yarolegovich.wellsql.core.Identifiable;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -29,12 +30,12 @@ public class CodeGenUtils {
                 .addAnnotation(Override.class);
     }
 
-    public static TypeName wildcard(Class<?> clazz) {
-        return ParameterizedTypeName.get(ClassName.get(clazz), TypeVariableName.get("?"));
+    public static TypeName wildcardIdentifiable(Class<?> clazz) {
+        return ParameterizedTypeName.get(ClassName.get(clazz), WildcardTypeName.subtypeOf(Identifiable.class));
     }
 
-    public static TypeName mapOfParametrized(Class<? extends Map> map, Class<?> first, Class<?> second) {
-        return ParameterizedTypeName.get(ClassName.get(map), wildcard(first), wildcard(second));
+    public static TypeName mapOfParametrizedIdentifiable(Class<? extends Map> map, Class<?> first, Class<?> second) {
+        return ParameterizedTypeName.get(ClassName.get(map), wildcardIdentifiable(first), wildcardIdentifiable(second));
     }
 
     public static String putForToken(String type) {
