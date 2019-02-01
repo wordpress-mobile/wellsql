@@ -169,6 +169,19 @@ public class WellSqlTest {
     }
 
     @Test
+    public void selectCountWorks() {
+        WellSql.insert(getHeroes()).execute();
+
+        long totalHeroes = WellSql.select(SuperHero.class).count();
+        assertEquals(getHeroes().size(), totalHeroes);
+
+        long heroesFoughtFour = WellSql.select(SuperHero.class)
+                .where().equals(SuperHeroTable.FOUGHT, 4).endWhere()
+                .count();
+        assertEquals(2, heroesFoughtFour);
+    }
+
+    @Test
     public void constraintsWork() {
         SuperHero hero = getHeroes().get(0);
         hero.setFoughtVillains(-1);

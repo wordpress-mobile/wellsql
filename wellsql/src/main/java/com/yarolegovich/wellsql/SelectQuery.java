@@ -1,6 +1,7 @@
 package com.yarolegovich.wellsql;
 
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
@@ -166,6 +167,11 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
 
     public WellCursor<T> getAsCursor(SelectMapper<T> mapper) {
         return new WellCursor<>(mDb, mapper, execute());
+    }
+
+    public long count() {
+        return DatabaseUtils.queryNumEntries(mDb, WellSql.tableFor(mModel).getTableName(),
+                mSelection, mSelectionArgs);
     }
 
     public void getAsModelAsync(final Callback<List<T>> callback) {
