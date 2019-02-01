@@ -30,6 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -166,6 +167,41 @@ public class WellSqlTest {
         assertEquals(5, heroes.size());
         assertTrue(heroes.get(0).getName().equals("FluxC"));
         assertTrue(heroes.get(1).getName().equals("Douglas Adams"));
+    }
+
+    @Test
+    public void selectCountWorks() {
+        WellSql.insert(getHeroes()).execute();
+
+        long totalHeroes = WellSql.select(SuperHero.class).count();
+        assertEquals(getHeroes().size(), totalHeroes);
+
+        long heroesFoughtFour = WellSql.select(SuperHero.class)
+                .where().equals(SuperHeroTable.FOUGHT, 4).endWhere()
+                .count();
+        assertEquals(2, heroesFoughtFour);
+    }
+
+    @Test
+    public void selectExistsWorks() {
+        boolean emptyTableExists = WellSql.select(SuperHero.class).exists();
+
+        assertFalse(emptyTableExists);
+
+        WellSql.insert(getHeroes()).execute();
+        boolean tableWithValuesExists = WellSql.select(SuperHero.class).exists();
+
+        assertTrue(tableWithValuesExists);
+
+        boolean heroesFoughtFourExists = WellSql.select(SuperHero.class)
+                .where().equals(SuperHeroTable.FOUGHT, 4).endWhere()
+                .exists();
+        assertTrue(heroesFoughtFourExists);
+
+        boolean heroesFoughtTooManyExists = WellSql.select(SuperHero.class)
+                .where().equals(SuperHeroTable.FOUGHT, 5555).endWhere()
+                .exists();
+        assertFalse(heroesFoughtTooManyExists);
     }
 
     @Test
