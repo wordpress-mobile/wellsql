@@ -169,6 +169,15 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
         return new WellCursor<>(mDb, mapper, execute());
     }
 
+    /**
+     * Returns whether any results exist for the query.
+     * Equivalent to <code>SELECT 1 FROM table</code>.
+     */
+    public boolean exists() {
+        mProjection = new String[]{"1"};
+        return !getAsModel().isEmpty();
+    }
+
     public long count() {
         return DatabaseUtils.queryNumEntries(mDb, WellSql.tableFor(mModel).getTableName(),
                 mSelection, mSelectionArgs);
