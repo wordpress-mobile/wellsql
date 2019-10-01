@@ -8,9 +8,9 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
-    compile project(':well-annotations')
-    compile 'com.squareup:javapoet:1.4.0'
-    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    implementation project(':well-annotations')
+    implementation 'com.squareup:javapoet:1.11.1'
+    implementation 'com.google.auto.service:auto-service:1.0-rc4'
 }
 
 publish {
@@ -19,7 +19,7 @@ publish {
     groupId = rootProject.groupId
     uploadName = rootProject.uploadName
     publishVersion = rootProject.publishVersion
-    description = rootProject.description
+    desc = rootProject.desc
     licences = rootProject.licences
     website = rootProject.website
     dryRun = rootProject.dryRun
