@@ -14,7 +14,8 @@ In build.gradle for your module add:
 
 ```gradle
 dependencies {
-    compile 'org.wordpress:wellsql:1.2.0'
+    api 'org.wordpress:wellsql:1.2.0'
+    // Use kapt instead of annotationProcessor if you're using Kotlin
     annotationProcessor 'org.wordpress:wellsql-processor:1.2.0'
 }
 ```
@@ -38,7 +39,8 @@ In build.gradle for your module add:
 
 ```gradle
 dependencies {
-    compile 'com.github.wordpress-mobile.wellsql:wellsql:[commit hash or branch snaphost]'
+    api 'com.github.wordpress-mobile.wellsql:wellsql:[commit hash or branch snaphost]'
+    // Use kapt instead of annotationProcessor if you're using Kotlin
     annotationProcessor 'com.github.wordpress-mobile.wellsql:well-processor:[commit hash or branch snaphost]'
 }
 ```
