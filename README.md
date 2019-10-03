@@ -14,9 +14,9 @@ In build.gradle for your module add:
 
 ```gradle
 dependencies {
-    api 'org.wordpress:wellsql:1.2.0'
+    api 'org.wordpress:wellsql:1.5.0'
     // Use kapt instead of annotationProcessor if you're using Kotlin
-    annotationProcessor 'org.wordpress:wellsql-processor:1.2.0'
+    annotationProcessor 'org.wordpress:wellsql-processor:1.5.0'
 }
 ```
 
@@ -30,7 +30,7 @@ In build.gradle for your project add:
 allprojects {
     repositories {
         ...
-        maven { url "https://jitpack.io" }
+        maven { url "https://www.jitpack.io" }
     }
 }
 ```
