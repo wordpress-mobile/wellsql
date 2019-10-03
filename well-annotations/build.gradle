@@ -13,7 +13,7 @@ publish {
     groupId = rootProject.groupId
     uploadName = rootProject.uploadName
     publishVersion = rootProject.publishVersion
-    description = rootProject.description
+    desc = rootProject.desc
     licences = rootProject.licences
     website = rootProject.website
     dryRun = rootProject.dryRun
