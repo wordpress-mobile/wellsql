@@ -3,7 +3,6 @@ package com.yarolegovich.wellsql;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -49,7 +48,7 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
     private String mSelection;
     private String[] mSelectionArgs;
 
-    private SQLiteQueryBuilder mSQLiteQueryBuilder = new SQLiteQueryBuilder();
+    private WellSQLiteQueryBuilder mSQLiteQueryBuilder = new WellSQLiteQueryBuilder();
 
     SelectQuery(SQLiteDatabase db, Class<T> tableClass) {
         TableClass table = WellSql.tableFor(tableClass);
@@ -97,19 +96,8 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
         return this;
     }
 
-    public SelectQuery<T> orderBy(String column, @Order int order, @Collate int collate) {
-        orderBy(column, order);
-        switch (collate) {
-            case COLLATE_BINARY:
-                mSortOrder = mSortOrder.concat(" COLLATE BINARY");
-                break;
-            case COLLATE_NOCASE:
-                mSortOrder = mSortOrder.concat(" COLLATE NOCASE");
-                break;
-            case COLLATE_RTRIM:
-                mSortOrder = mSortOrder.concat(" COLLATE RTRIM");
-                break;
-        }
+    public SelectQuery<T> setCollation(@Collate int collation) {
+        mSQLiteQueryBuilder.setCollation(collation);
         return this;
     }
 
@@ -267,8 +255,9 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
     // https://www.sqlite.org/datatype3.html#collation
     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({COLLATE_BINARY, COLLATE_NOCASE, COLLATE_RTRIM})
+    @IntDef({COLLATE_NONE, COLLATE_BINARY, COLLATE_NOCASE, COLLATE_RTRIM})
     public @interface Collate {}
+    public static final int COLLATE_NONE = 0;
     public static final int COLLATE_BINARY = 1;
     public static final int COLLATE_NOCASE = 2;
     public static final int COLLATE_RTRIM = 3;

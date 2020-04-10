@@ -170,6 +170,19 @@ public class WellSqlTest {
     }
 
     @Test
+    public void collateNoCaseWorks() {
+        WellSql.insert(getHeroes()).execute();
+
+        List<SuperHero> heroes = WellSql.select(SuperHero.class)
+                .setCollation(SelectQuery.COLLATE_NOCASE)
+                .orderBy(SuperHeroTable.NAME, SelectQuery.ORDER_ASCENDING)
+                .limit(12)
+                .getAsModel();
+
+        assertTrue(heroes.get(0).getName().equals("avengers"));
+    }
+
+    @Test
     public void selectCountWorks() {
         WellSql.insert(getHeroes()).execute();
 
@@ -476,7 +489,8 @@ public class WellSqlTest {
                 new SuperHero("Thor", 12),
                 new SuperHero("Jake Wharton", 7),
                 new SuperHero("Groot", 2),
-                new SuperHero("Nick Fury", 4)
+                new SuperHero("Nick Fury", 4),
+                new SuperHero("avengers", 1)
         );
     }
 
