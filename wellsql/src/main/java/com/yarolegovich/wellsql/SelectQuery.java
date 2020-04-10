@@ -97,6 +97,22 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
         return this;
     }
 
+    public SelectQuery<T> orderBy(String column, @Order int order, @Collate int collate) {
+        orderBy(column, order);
+        switch (collate) {
+            case COLLATE_BINARY:
+                mSortOrder = mSortOrder.concat(" COLLATE BINARY");
+                break;
+            case COLLATE_NOCASE:
+                mSortOrder = mSortOrder.concat(" COLLATE NOCASE");
+                break;
+            case COLLATE_RTRIM:
+                mSortOrder = mSortOrder.concat(" COLLATE RTRIM");
+                break;
+        }
+        return this;
+    }
+
     public SelectQuery<T> uniqueOnly() {
         mSQLiteQueryBuilder.setDistinct(true);
         return this;
@@ -248,4 +264,12 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
     public static final int ORDER_ASCENDING = 1;
     public static final int ORDER_DESCENDING = -1;
 
+    // https://www.sqlite.org/datatype3.html#collation
+    @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ORDER_ASCENDING, ORDER_DESCENDING})
+    public @interface Collate {}
+    public static final int COLLATE_BINARY = 1;
+    public static final int COLLATE_NOCASE = 2;
+    public static final int COLLATE_RTRIM = 3;
 }
