@@ -267,7 +267,7 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
     // https://www.sqlite.org/datatype3.html#collation
     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ORDER_ASCENDING, ORDER_DESCENDING})
+    @IntDef({COLLATE_BINARY, COLLATE_NOCASE, COLLATE_RTRIM})
     public @interface Collate {}
     public static final int COLLATE_BINARY = 1;
     public static final int COLLATE_NOCASE = 2;
