@@ -22,7 +22,8 @@ public class WellCursor<T> extends CursorWrapper {
     WellCursor(SQLiteDatabase db, SelectMapper<T> mapper, Cursor cursor) {
         super(cursor);
 
-        // Enlarge the cursor window size to avoid SQLiteBlobTooBigExceptions
+        // Enlarge the cursor window size to avoid SQLiteBlobTooBigExceptions (default is 2MB).
+        // Note that memory is dynamically allocated as data rows are added to the window.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             ((SQLiteCursor) cursor).setWindow(new CursorWindow(null, CURSOR_WINDOW_SIZE));
         }
