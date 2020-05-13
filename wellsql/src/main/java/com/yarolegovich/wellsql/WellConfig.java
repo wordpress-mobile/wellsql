@@ -14,6 +14,7 @@ public interface WellConfig {
 
     int getDbVersion();
     String getDbName();
+    long getCursorWindowSize();
 
     OnUpgradeListener getOnUpgradeListener();
     OnCreateListener getOnCreateListener();

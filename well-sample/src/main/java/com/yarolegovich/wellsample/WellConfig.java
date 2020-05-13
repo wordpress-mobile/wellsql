@@ -70,6 +70,11 @@ public class WellConfig extends DefaultWellConfig {
         return "my_db";
     }
 
+    @Override
+    public long getCursorWindowSize() {
+        return 1024 * 1024 * 5;
+    }
+
     public void reset() {
         SQLiteDatabase db = WellSql.giveMeWritableDb();
         for (Class<? extends Identifiable> clazz : mTables) {
