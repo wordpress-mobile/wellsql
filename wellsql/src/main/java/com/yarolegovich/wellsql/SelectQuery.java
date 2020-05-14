@@ -1,9 +1,12 @@
 package com.yarolegovich.wellsql;
 
 import android.database.Cursor;
+import android.database.CursorWindow;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -202,13 +205,23 @@ public class SelectQuery<T extends Identifiable> implements ConditionClauseConsu
     }
 
     private Cursor execute() {
-        return mSQLiteQueryBuilder.query(mDb,
+        Cursor cursor = mSQLiteQueryBuilder.query(mDb,
                 mProjection,
                 mSelection,
                 mSelectionArgs,
                 mGroupBy, mHaving,
                 mSortOrder,
                 mLimit);
+
+        // Enlarge the cursor window size if the configuration value is set to avoid
+        // SQLiteBlobTooBigExceptions (default is 2MB). Note that memory is dynamically
+        // allocated as data rows are added to the window.
+        long cursorWindowSize = WellSql.mDbConfig.getCursorWindowSize();
+        if (cursorWindowSize > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ((SQLiteCursor) cursor).setWindow(new CursorWindow(null, cursorWindowSize));
+        }
+
+        return cursor;
     }
 
     @Override

@@ -24,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +40,7 @@ import static org.junit.Assert.fail;
  */
 @RunWith(AndroidJUnit4.class)
 public class WellSqlTest {
-    private static int CURSOR_SIZE = 1000;
+    private static int CURSOR_SIZE = 1024 * 1024;
 
     @BeforeClass
     public static void setUpDb() {
@@ -472,15 +471,19 @@ public class WellSqlTest {
 
     @Test
     public void setCursorSizeWorks() {
-        List<SuperHero> heroes = new ArrayList<>();
-        for (int i = 0; i < CURSOR_SIZE * 10; i++) {
-            heroes.add(new SuperHero(String.valueOf(i), i));
-        }
-        WellSql.insert(heroes).asSingleTransaction(true).execute();
+        // create a name longer than our cursor size
+        char[] charArray = new char[CURSOR_SIZE * 2];
+        Arrays.fill(charArray, 'a');
+        String name = new String(charArray);
 
+        // insert a superhero with this name
+        SuperHero hero = new SuperHero(name, 0);
+        WellSql.insert(hero).execute();
+
+        // now retrieve the superhero
         try {
-            int numSelected = WellSql.select(SuperHero.class).getAsModel().size();
-            fail(String.format("Exception was expected, instead selected %d rows", numSelected));
+            List<SuperHero> heroes = WellSql.select(SuperHero.class).getAsModel();
+            fail(String.format("Exception was expected, instead selected %d rows", heroes.size()));
         } catch (SQLiteBlobTooBigException expected) {
             // we expected this to occur
         }

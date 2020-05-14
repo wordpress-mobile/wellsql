@@ -1,11 +1,8 @@
 package com.yarolegovich.wellsql;
 
 import android.database.Cursor;
-import android.database.CursorWindow;
 import android.database.CursorWrapper;
-import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.support.annotation.Nullable;
 
 import com.yarolegovich.wellsql.mapper.SelectMapper;
@@ -20,15 +17,6 @@ public class WellCursor<T> extends CursorWrapper {
 
     WellCursor(SQLiteDatabase db, SelectMapper<T> mapper, Cursor cursor) {
         super(cursor);
-
-        // Enlarge the cursor window size if the configuration value is set to avoid
-        // SQLiteBlobTooBigExceptions (default is 2MB). Note that memory is dynamically
-        // allocated as data rows are added to the window.
-        long cursorWindowSize = WellSql.mDbConfig.getCursorWindowSize();
-        if (cursorWindowSize > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ((SQLiteCursor) cursor).setWindow(new CursorWindow(null, cursorWindowSize));
-        }
-
         mDb = db;
         mMapper = mapper;
     }
