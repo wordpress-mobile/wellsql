@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteBlobTooBigException;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -20,12 +19,12 @@ import com.yarolegovich.wellsql.mapper.InsertMapper;
 import com.yarolegovich.wellsql.mapper.SQLiteMapper;
 import com.yarolegovich.wellsql.mapper.SelectMapper;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -473,20 +472,15 @@ public class WellSqlTest {
 
     @Test
     public void setCursorSizeWorks() {
-        SQLiteDatabase db = WellSql.giveMeWritableDb();
-        db.execSQL("DROP TABLE IF EXISTS test");
-        db.execSQL("CREATE TABLE test (test BLOB NOT NULL);");
-
-        byte[] testArr = new byte[CURSOR_SIZE * 2];
-        Arrays.fill(testArr, (byte) 1);
-        for (int i = 0; i < 10; i++) {
-            db.execSQL("INSERT INTO test VALUES (?)", new Object[]{testArr});
+        List<SuperHero> heroes = new ArrayList<>();
+        for (int i = 0; i < CURSOR_SIZE * 10; i++) {
+            heroes.add(new SuperHero(String.valueOf(i), i));
         }
+        WellSql.insert(heroes).asSingleTransaction(true).execute();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM test", null);
         try {
-            cursor.moveToNext();
-            fail("Exception is expected when row exceeds CursorWindow size");
+            int numSelected = WellSql.select(SuperHero.class).getAsModel().size();
+            fail(String.format("Exception was expected, instead selected %d rows", numSelected));
         } catch (SQLiteBlobTooBigException expected) {
             // we expected this to occur
         }
