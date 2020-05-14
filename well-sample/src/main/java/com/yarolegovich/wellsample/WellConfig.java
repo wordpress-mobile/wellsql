@@ -18,6 +18,8 @@ import java.util.Set;
  * Created by yarolegovich on 26.11.2015.
  */
 public class WellConfig extends DefaultWellConfig {
+    private long mCursorSize = 0L;
+
     public WellConfig(Context context) {
         super(context);
     }
@@ -72,7 +74,11 @@ public class WellConfig extends DefaultWellConfig {
 
     @Override
     public long getCursorWindowSize() {
-        return 1024 * 1024 * 5;
+        return mCursorSize;
+    }
+
+    public void setCursorWindowSize(long size) {
+        mCursorSize = size;
     }
 
     public void reset() {

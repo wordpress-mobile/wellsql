@@ -3,7 +3,9 @@ package com.yarolegovich.wellsample;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteBlobTooBigException;
 import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -33,17 +35,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by yarolegovich on 27.11.2015.
  */
 @RunWith(AndroidJUnit4.class)
 public class WellSqlTest {
+    private static int CURSOR_SIZE = 1000;
 
     @BeforeClass
     public static void setUpDb() {
         Context context = InstrumentationRegistry.getTargetContext();
         WellConfig config = new WellConfig(context, App.ENABLED_ADDONS);
+        config.setCursorWindowSize(CURSOR_SIZE);
         WellSql.init(config);
         config.reset();
     }
@@ -325,7 +330,7 @@ public class WellSqlTest {
             WellSql.delete(SuperHero.class).where()
                     .equals(SuperHeroTable.ID, superHero.getId())
                     .endWhere().execute();
-            Assert.fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
+            fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
         } catch(SQLiteConstraintException e) {
             // No op
         }
@@ -335,7 +340,7 @@ public class WellSqlTest {
             WellSql.delete(Villain.class).where()
                     .equals(VillainTable.ID, villain.getId())
                     .endWhere().execute();
-            Assert.fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
+            fail("Expected SQLiteConstraintException: FOREIGN KEY constraint failed");
         } catch(SQLiteConstraintException e) {
             // No op
         }
@@ -464,6 +469,27 @@ public class WellSqlTest {
         WellSql.insert(altHeroes).execute();
         List<AlternateHero> stored = WellSql.select(AlternateHero.class).getAsModel();
         assertEquals(altHeroes.size(), stored.size());
+    }
+
+    @Test
+    public void setCursorSizeWorks() {
+        SQLiteDatabase db = WellSql.giveMeWritableDb();
+        db.execSQL("DROP TABLE IF EXISTS test");
+        db.execSQL("CREATE TABLE test (test BLOB NOT NULL);");
+
+        byte[] testArr = new byte[CURSOR_SIZE * 2];
+        Arrays.fill(testArr, (byte) 1);
+        for (int i = 0; i < 10; i++) {
+            db.execSQL("INSERT INTO test VALUES (?)", new Object[]{testArr});
+        }
+
+        Cursor cursor = db.rawQuery("SELECT * FROM test", null);
+        try {
+            cursor.moveToNext();
+            fail("Exception is expected when row exceeds CursorWindow size");
+        } catch (SQLiteBlobTooBigException expected) {
+            // we expected this to occur
+        }
     }
 
     private List<SuperHero> getHeroes() {
