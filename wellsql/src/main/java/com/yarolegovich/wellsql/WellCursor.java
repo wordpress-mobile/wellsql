@@ -17,7 +17,6 @@ public class WellCursor<T> extends CursorWrapper {
 
     WellCursor(SQLiteDatabase db, SelectMapper<T> mapper, Cursor cursor) {
         super(cursor);
-
         mDb = db;
         mMapper = mapper;
     }
